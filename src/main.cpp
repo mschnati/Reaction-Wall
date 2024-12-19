@@ -43,6 +43,16 @@ void setup() {
   reaction_game_init(&gameState);
   snake_animation_init(&snakeState, false);
   tictactoe_init(&tictactoeState);
+
+  // Display FHMS logo until any button is pressed
+  display_logo();
+  while (true) {
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+      if (checkButton(i)) {
+        return;
+      }
+    }
+  }
 }
 
 bool gameIsRunning() {

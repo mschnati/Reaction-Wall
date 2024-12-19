@@ -228,3 +228,26 @@ void rainbow_snake_old() {
         }
     }
 }
+
+void display_logo() {
+    // Iterate over each byte in the FHMS_LOGO array
+    for (int i = 0; i < 32; i++) {
+        unsigned char byte = FHMS_LOGO[i];
+        // Each byte contains 8 bits
+        for (int bit = 0; bit < 8; bit++) {
+            int bitIndex = i * 8 + bit;
+            int x = bitIndex % 16;
+            int y = bitIndex / 16;
+
+            // Check if the current bit is set
+            if (byte & (0x80 >> bit)) {
+                // Set the LED to white if the bit is 1
+                leds[LEDMatrix[x][y]] = CRGB::Black;
+            } else {
+                // Turn off the LED if the bit is 0
+                leds[LEDMatrix[x][y]] = CRGB::Blue;
+            }
+        }
+    }
+    FastLED.show();
+}

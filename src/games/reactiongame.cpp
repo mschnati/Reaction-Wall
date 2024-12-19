@@ -58,8 +58,12 @@ void reaction_game_set_new_block(ReactionGameState* state) {
     int oldY = state->activeBlock % 3;
     setBlockColor_3(oldX, oldY, CRGB::Black);
     
-    // Set new random block
-    state->activeBlock = random(9);
+    // Set new random block, different from the current one
+    int new_block = random(9);
+    while (new_block == state->activeBlock) {
+        new_block = random(9);
+    }
+    state->activeBlock = new_block;
     int newX = state->activeBlock / 3;
     int newY = state->activeBlock % 3;
     // setBlockColor_3(newX, newY, BLOCK_COLOR);
@@ -82,21 +86,15 @@ void reaction_game_update(ReactionGameState* state) {
         
         // Display score
         display_score(state->score, CRGB::Green);
-        delay(5000);  // Show for 5 seconds
+        delay(3000);  // Show for 5 seconds
         FastLED.clear();
         FastLED.show();
         return;
     }
 
-    for (int i = 0; i < 9; i++) {
-        if (digitalRead(buttons[i]) == LOW) {
-            if (i == state->activeBlock) {
-                state->score++;
-                reaction_game_set_new_block(state);
-            }
-            delay(20); // Simple debounce
-            break;
-        }
+    if (checkButton(state->activeBlock + 1)) {
+        state->score++;
+        reaction_game_set_new_block(state);
     }
 }
 
