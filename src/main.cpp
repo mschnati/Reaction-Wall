@@ -11,8 +11,10 @@
 #define PLAY_TICTACTOE_BUTTON 8
 
 enum Animation {
-  SNAKE_ANIMATION = 0,
-  RANDOM_BLOCK,
+  RANDOM_BLOCK = 0,
+  SNAKE_ANIMATION,
+  IDLE,
+  WAVE,
   NUM_ANIMATIONS
 };
 
@@ -25,7 +27,7 @@ enum Game {
 ReactionGameState gameState;
 SnakeState snakeState;
 TicTacToeState tictactoeState;
-Animation currentAnimation = RANDOM_BLOCK;
+Animation currentAnimation = SNAKE_ANIMATION;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
@@ -44,6 +46,7 @@ void setup() {
 
   // Initialize LED matrix
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
+  int brightness = BRIGHTNESS;
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.setMaxRefreshRate(60);
   FastLED.clear();
@@ -58,18 +61,40 @@ void setup() {
   snake_animation_init(&snakeState, false);
   tictactoe_init(&tictactoeState);
 
-  updateDisplay("FHMS", 0, 3);
-  updateDisplay("Press Button to Play", 3, 1);
+  updateDisplay("FHMS", 0, 2);
+  updateDisplay("Middle to Start", 2, 1);
+  updateDisplay("Up/Down adj Brightness", 3, 1);
 
   // Display FHMS logo until any button is pressed
   display_logo();
   unsigned long startTime = millis();
-  const unsigned long waitTime = 8000;
+  const unsigned long waitTime = 10000;
 
   while (millis() - startTime < waitTime) {
     for (int i = 0; i < NUM_BUTTONS; i++) {
       if (checkButton(i)) {
-        return;
+        if (i == 8) {
+          brightness += 10;
+          if (brightness > 255) {
+            brightness = 255;
+          }
+          FastLED.setBrightness(brightness);
+          FastLED.show();
+        } else if (i == 2) {
+          brightness -= 10;
+          if (brightness < 0) {
+            brightness = 0;
+          }
+          FastLED.setBrightness(brightness);
+          FastLED.show();
+        } else {
+            // Show main menu
+          display.clearDisplay();
+          updateDisplay("5: Reaction Game", 0, 1);
+          updateDisplay("8: TicTacToe Game", 1, 1);
+          updateDisplay("4/6: Change Animation", 2, 1);
+          return;
+        }
       }
     }
   }
@@ -77,18 +102,6 @@ void setup() {
 
 bool gameIsRunning() {
     return reaction_game_is_running(&gameState) || tictactoe_is_running(&tictactoeState);
-}
-
-void display_test() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println("Hello, world!");
-    // Draw a simple graphic
-  display.drawRect(0, 16, 50, 20, SSD1306_WHITE);
-  display.display();
-  delay(1000);
 }
 
 void loop() {
@@ -137,11 +150,15 @@ void loop() {
         case RANDOM_BLOCK:
             randomBlock();
             break;
+        case IDLE:
+            idle_animation();
+            break;
+        case WAVE:
+            wave_ripple_animation();
+            break;
         default:
             break;
     }
-    // show main menu
-
   }
 }
 

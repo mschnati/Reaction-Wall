@@ -29,6 +29,8 @@ void rainbow_snake_old();
 void pulse_animation(int centerX, int centerY, CRGB color);
 void randomBlock();
 void display_logo();
+void idle_animation();
+void wave_ripple_animation();
 
 const unsigned char FHMS_LOGO [] PROGMEM = {
 	0xfe, 0x7f, 0xfc, 0x7f, 0xfa, 0x9f, 0xf1, 0x0f, 0xe2, 0x17, 0xc4, 0x23, 0x88, 0x45, 0x10, 0x89, 

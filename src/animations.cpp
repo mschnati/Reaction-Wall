@@ -251,3 +251,47 @@ void display_logo() {
     }
     FastLED.show();
 }
+
+void idle_animation() {
+    static uint16_t hueOffset = 0;
+    for (int y = 0; y < 16; y++) {
+        for (int x = 0; x < 16; x++) {
+            uint8_t hue = (x * 16 + y * 16 + hueOffset) % 256;
+            leds[LEDMatrix[x][y]] = CHSV(hue, 255, 255);
+        }
+    }
+    FastLED.show();
+    hueOffset += 1;
+}
+
+void wave_ripple_animation() {
+    static uint8_t timeOffset = 0;
+    static const uint8_t numWaves = 3;
+    const uint8_t centerX = 8;
+    const uint8_t centerY = 8;
+    
+    for(int y = 0; y < 16; y++) {
+        for(int x = 0; x < 16; x++) {
+            float distance = sqrt((x - centerX) * (x - centerX) + 
+                                (y - centerY) * (y - centerY));
+            
+            uint8_t brightness = 0;
+            for(uint8_t wave = 0; wave < numWaves; wave++) {
+                float wavePhase = distance * 0.7 - (timeOffset + wave * 85);
+                brightness += sin8(wavePhase) / numWaves;
+            }
+            
+            // Fix: Cast float to int before modulo
+            uint8_t hue = (uint8_t)(int(distance * 12) + timeOffset) % 256;
+            
+            if(brightness > 30) {
+                leds[LEDMatrix[x][y]] = CHSV(hue, 255, brightness);
+            } else {
+                leds[LEDMatrix[x][y]] = CRGB::Black;
+            }
+        }
+    }
+    
+    FastLED.show();
+    timeOffset += 2;
+}

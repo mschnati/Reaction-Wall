@@ -40,11 +40,3 @@ void updateDisplay(const char* message, int line, int textSize) {
     display.println(message);
     display.display();
 }
-
-void mainMenu() {
-      // Show main menu
-    display.clearDisplay();
-    updateDisplay("5: Reaction Game", 0, 1);
-    updateDisplay("8: TicTacToe Game", 1, 1);
-    updateDisplay("4/6: Change Animation", 2, 1);
-}
