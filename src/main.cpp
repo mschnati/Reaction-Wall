@@ -93,6 +93,7 @@ void setup() {
           updateDisplay("5: Reaction Game", 0, 1);
           updateDisplay("8: TicTacToe Game", 1, 1);
           updateDisplay("4/6: Change Animation", 2, 1);
+          FastLED.clear();
           return;
         }
       }
