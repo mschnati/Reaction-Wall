@@ -27,8 +27,22 @@ SnakeState snakeState;
 TicTacToeState tictactoeState;
 Animation currentAnimation = RANDOM_BLOCK;
 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 void setup() {
+    // Initialize I2C communication with specified SDA and SCL pins
+  Wire.begin(SDA_PIN, SCL_PIN);
+    // Initialize the display
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;); // Don't proceed, loop forever
+  }
+
+  // Clear the buffer
+  display.clearDisplay();
+  display.display();
+
+  // Initialize LED matrix
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(BRIGHTNESS);
   FastLED.setMaxRefreshRate(60);
@@ -44,9 +58,15 @@ void setup() {
   snake_animation_init(&snakeState, false);
   tictactoe_init(&tictactoeState);
 
+  updateDisplay("FHMS", 0, 3);
+  updateDisplay("Press Button to Play", 3, 1);
+
   // Display FHMS logo until any button is pressed
   display_logo();
-  while (true) {
+  unsigned long startTime = millis();
+  const unsigned long waitTime = 8000;
+
+  while (millis() - startTime < waitTime) {
     for (int i = 0; i < NUM_BUTTONS; i++) {
       if (checkButton(i)) {
         return;
@@ -59,11 +79,25 @@ bool gameIsRunning() {
     return reaction_game_is_running(&gameState) || tictactoe_is_running(&tictactoeState);
 }
 
+void display_test() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("Hello, world!");
+    // Draw a simple graphic
+  display.drawRect(0, 16, 50, 20, SSD1306_WHITE);
+  display.display();
+  delay(1000);
+}
+
 void loop() {
   // Start reaction game when middle button is pressed
   if (!gameIsRunning() && checkButton(PLAY_REACTION_BUTTON)) {
       FastLED.clear();
       FastLED.show();
+      display.clearDisplay();
+      updateDisplay("Reaction Game", 0, 1);
       reaction_game_start(&gameState);
   }
 
@@ -71,6 +105,8 @@ void loop() {
   if (!gameIsRunning() && checkButton(PLAY_TICTACTOE_BUTTON)) {
       FastLED.clear();
       FastLED.show();
+      display.clearDisplay();
+      updateDisplay("TicTacToe Game", 0, 1);
       tictactoe_start(&tictactoeState);
   }
 
@@ -104,6 +140,8 @@ void loop() {
         default:
             break;
     }
+    // show main menu
+
   }
 }
 

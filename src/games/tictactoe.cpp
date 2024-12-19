@@ -140,7 +140,14 @@ void tictactoe_update(TicTacToeState* state) {
         }
     }
 
-    
+    // Write current player to display
+    display.clearDisplay();
+    char message[16];
+    sprintf(message, "Player %d", state->currentPlayer);
+    updateDisplay("TicTacToe", 0, 1);
+    updateDisplay(message, 3, 1);
+
+
     for(int i = 0; i < 9; i++) {
         if(checkButton(i + 1)) {
             int row = i / 3;
@@ -148,13 +155,22 @@ void tictactoe_update(TicTacToeState* state) {
             if(state->board[row][col] == 0) {
                 state->board[row][col] = state->currentPlayer;
                 if(check_win(state)) {
+                    unsigned long endTime = millis();
                     state->winner.hasWinner = true;
                     // Display winning pieces in green
                     for(int i = 0; i < 3; i++) {
                         draw_piece(state->winner.positions[i], state->currentPlayer, WIN_COLOR);
                     }
                     FastLED.show();
-                    delay(WIN_DISPLAY_TIME);
+                    // Show winning player on display
+                    display.clearDisplay();
+                    sprintf(message, "Player %d wins!", state->currentPlayer);
+                    updateDisplay("TicTacToe", 0, 1);
+                    updateDisplay(message, 3, 1);
+
+                    while (millis() - endTime < WIN_DISPLAY_TIME) {
+                        // Wait to display winning pieces
+                    }
                     state->isActive = false;
                     FastLED.clear();
                     return;

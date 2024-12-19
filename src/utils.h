@@ -11,5 +11,7 @@ const int buttons[] = {
 };
 
 bool checkButton(int buttonNum);
+void updateDisplay(const char* message, int line, int textSize);
+void mainMenu();
 
 #endif

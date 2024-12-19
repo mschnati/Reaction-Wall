@@ -36,9 +36,15 @@ void reaction_game_start(ReactionGameState* state) {
             GAME_DURATION += 1000;
             reaction_game_set_duration(state, GAME_DURATION);
         } else if (checkButton(2)) {
-            GAME_DURATION -= 1000;
+            if (GAME_DURATION > 1000) GAME_DURATION -= 1000;
             reaction_game_set_duration(state, GAME_DURATION);
         }
+        // format string with duration
+        display.clearDisplay();
+        updateDisplay("Reaction Game", 0, 1);
+        char message[16];
+        sprintf(message, "Duration: %d", GAME_DURATION / 1000);
+        updateDisplay(message, 3, 1);
     }
     FastLED.clear();
 
@@ -81,18 +87,40 @@ void reaction_game_update(ReactionGameState* state) {
     // Check game over
     if (millis() - state->gameStartTime >= GAME_DURATION) {
         state->isGameActive = false;
+        state->gameEndTime = millis(); // Record the time when the game ended
+
         FastLED.clear();
         FastLED.show();
         
         // Display score
         display_score(state->score, CRGB::Green);
-        delay(3000);  // Show for 5 seconds
+        // Display average reaction in ms time on display
+        display.clearDisplay();
+        char message[32];
+        sprintf(message, "Score: %d", state->score);
+        updateDisplay(message, 0, 1);
+
+        if (state->score > 0) {
+            sprintf(message, "Avg Time: %d ms", GAME_DURATION / state->score);
+        } else {
+            sprintf(message, "No Hits");
+        }
+        updateDisplay(message, 3, 1);
+        
+        while (millis() - state->gameEndTime < 5000) {
+            // Wait for 5 seconds before returning to main menu
+        }
         FastLED.clear();
         FastLED.show();
+        // mainMenu();
         return;
     }
 
     if (checkButton(state->activeBlock + 1)) {
+        char message[16];
+        sprintf(message, "Score: %d", state->score);
+        display.clearDisplay();
+        updateDisplay(message, 1, 2);
         state->score++;
         reaction_game_set_new_block(state);
     }

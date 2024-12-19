@@ -9,6 +9,7 @@ typedef struct {
     unsigned long gameStartTime;
     int activeBlock;
     bool isGameActive;
+    unsigned long gameEndTime; // Time when the game ended
 } ReactionGameState;
 
 // Function prototypes
