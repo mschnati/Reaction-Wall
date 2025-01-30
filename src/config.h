@@ -7,6 +7,6 @@
 // #define PULSE
 #define REACTION_GAME
 #define TICTACTOE_GAME
-// #define TEST
+#define TEST
 
 #endif

@@ -45,6 +45,7 @@ extern Adafruit_SSD1306 display;
 #define LED_COLS 16
 #define DATA_PIN 16
 #define DEBOUNCE_TIME 50
+#define DISPLAY_TIME 1000
 #define BRIGHTNESS 40
 
 
