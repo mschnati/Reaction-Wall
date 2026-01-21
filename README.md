@@ -9,3 +9,5 @@ The game is built using an ESP32 microcontroller and a 16x16 LED matrix.
 As inputs we have 9 buttons in a 3x3 grid.
 
 The real Prototype will have 42 buttons in a 6x7 grid. Where the player can press right on the button that lights up.
+
+As the ESP32 turned out to not have enough pins i switched to an [Arduino Mega](https://github.com/mschnati/Reaction_Wall_Mega)
